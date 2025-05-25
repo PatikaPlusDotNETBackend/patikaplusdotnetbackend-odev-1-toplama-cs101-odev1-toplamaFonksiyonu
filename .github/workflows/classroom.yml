@@ -1,0 +1,29 @@
+name: Autograding Tests
+'on':
+- push
+- repository_dispatch
+permissions:
+  checks: write
+  actions: read
+  contents: read
+jobs:
+  run-autograding-tests:
+    runs-on: ubuntu-latest
+    if: github.actor != 'github-classroom[bot]'
+    steps:
+    - name: Checkout code
+      uses: actions/checkout@v4
+    - name: Odev1-Test
+      id: odev1-test
+      uses: classroom-resources/autograding-command-grader@v1
+      with:
+        test-name: Odev1-Test
+        setup-command: ''
+        command: dotnet test
+        timeout: 10
+    - name: Autograding Reporter
+      uses: classroom-resources/autograding-grading-reporter@v1
+      env:
+        ODEV1-TEST_RESULTS: "${{steps.odev1-test.outputs.result}}"
+      with:
+        runners: odev1-test
